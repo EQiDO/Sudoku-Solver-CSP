@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ namespace Assets._Scripts
         public GameObject NodeGameObject { get; private set; }
         public TMP_Text NodeGameObjectText => NodeGameObject?.GetComponentInChildren<TMP_Text>();
         public float NodeValue { get; private set; }
+        public HashSet<int> NodeDomain { get; private set; }
         #endregion
 
         #endregion
@@ -43,21 +45,38 @@ namespace Assets._Scripts
         {
             NodeValue = value;
         }
-
-        public bool CompareValue(int value)
+        public void SetNodeGameObjectColor(Color color)
+        {
+            if (NodeGameObject == null) return;
+            NodeGameObjectText.color = color;
+        }
+        public bool CompareValue(float value)
         {
             return Math.Abs(NodeValue - value) < 0.001;
         }
-        public void SetNodeData(float value)
+
+        public void SetNodeDomain(List<int> domain)
+        {
+            NodeDomain = new HashSet<int>(domain);
+        }
+        public void UpdateNodeDomain(int value, bool add)
+        {
+            if (add)
+                NodeDomain.Add(value);
+            else
+                NodeDomain.Remove(value);
+        }
+        public void SetNodeData(float value, Color color)
         {
             SetValue(value);
             SetNodeGameObjectText(value);
+            SetNodeGameObjectColor(color);
         }
-        
+
         public void SetNodeGameObjectText(float value)
         {
             if (NodeGameObject == null) return;
-            NodeGameObjectText?.SetText(float.IsNaN(value) ? null : value.ToString());
+            NodeGameObjectText?.SetText(value == 0 ? null : value.ToString());
         }
 
         #endregion
