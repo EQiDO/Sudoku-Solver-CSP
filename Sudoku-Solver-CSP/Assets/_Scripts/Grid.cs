@@ -12,19 +12,19 @@ namespace Assets._Scripts
 
         private Node[,] _grid;
         private float _nodeDiameter;
-        private int _gridSizeX, _gridSizeY;
+        private int _gridSizeN;
 
-        private readonly List<int> _nodeDomain;
+        private readonly List<string> _nodeDomain;
 
         public IEnumerable<Node> GetAllNodes => _grid.Cast<Node>();
 
         public Node EmptyNodeWithSmallestDomain =>
             GetAllNodes
-                .Where(node => node.CompareValue(0))
+                .Where(node => node.CompareValue("0"))
                 .OrderBy(node => node.NodeDomain.Count)
                 .FirstOrDefault();
 
-        public Grid(List<int> nodeDomain, GameObject nodeObj, Vector2 gridWorldSize, float nodeRadius)
+        public Grid(List<string> nodeDomain, GameObject nodeObj, Vector2 gridWorldSize, float nodeRadius)
         {
             _nodeGameObject = nodeObj;
             _gridWorldSize = gridWorldSize;
@@ -40,16 +40,15 @@ namespace Assets._Scripts
         private void InitializeGrid()
         {
             _nodeDiameter = _nodeRadius * 2;
-            _gridSizeX = Mathf.RoundToInt(_gridWorldSize.x / _nodeDiameter);
-            _gridSizeY = Mathf.RoundToInt(_gridWorldSize.y / _nodeDiameter);
-            _grid = new Node[_gridSizeX, _gridSizeY];
+            _gridSizeN = Mathf.RoundToInt(_gridWorldSize.x / _nodeDiameter);
+            _grid = new Node[_gridSizeN, _gridSizeN];
 
             var worldUpperLeft = new Vector3(-_gridWorldSize.x / 2, 0, _gridWorldSize.y / 2);
             var nodeHolder = new GameObject("Node Holder");
 
-            for (var x = 0; x < _gridSizeX; x++)
+            for (var x = 0; x < _gridSizeN; x++)
             {
-                for (var y = 0; y < _gridSizeY; y++)
+                for (var y = 0; y < _gridSizeN; y++)
                 {
                     var worldPoint = worldUpperLeft +
                                      Vector3.right * (x * _nodeDiameter + _nodeRadius) +
@@ -59,7 +58,7 @@ namespace Assets._Scripts
 
                     var nodeGameObject = InstantiateNodeGameObject(_nodeGameObject, worldPoint, nodeHolder);
                     node.SetNodeGameObject(nodeGameObject);
-                    node.SetNodeDomain(_nodeDomain);
+                    node.NodeDomain = new HashSet<string>(_nodeDomain);
                 }
             }
             AssignPuzzle();
@@ -79,6 +78,21 @@ namespace Assets._Scripts
                 { 9, 0, 0, 0, 1, 0, 0, 3, 5 },
                 { 0, 5, 2, 6, 0, 0, 8, 0, 1 }
             };
+
+            var mediumGrid = new int[9, 9]
+            {
+                {2, 0, 5, 1, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 1, 0, 0},
+                {8, 0, 0, 0, 9, 0, 7, 2, 0},
+                {7, 0, 1, 5, 2, 0, 0, 0, 8},
+                {0, 0, 0, 0, 0, 0, 9, 0, 0},
+                {4, 0, 6, 9, 1, 0, 0, 0, 3},
+                {1, 0, 0, 0, 8, 0, 4, 6, 0},
+                {0, 0, 0, 0, 0, 0, 5, 0, 0},
+                {9, 0, 7, 4, 0, 0, 0, 0, 0}
+            };
+            
+
             var hardGrid = new int[9, 9]
             {
                 { 4, 0, 0, 8, 0, 2, 0, 0, 5 },
@@ -116,64 +130,146 @@ namespace Assets._Scripts
                 {6, 0, 0, 0, 0, 0, 0, 0, 0 }
 
             };
-            for (var x = 0; x < _gridSizeX; x++)
+            var largeGrid = new int[16, 16]
             {
-                for (var y = 0; y < _gridSizeY; y++)
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+
+            };
+
+
+            for (var x = 0; x < _gridSizeN; x++)
+            {
+                for (var y = 0; y < _gridSizeN; y++)
                 {
-                    var data = hardestGrid[y, x];
-                    _grid[x, y].SetNodeData(data, Color.black);
-                    if(data == 0) continue;
-                    UpdateDomains(_grid[x, y], data, float.NaN);
+                    var data = hardestGrid[y, x].ToString();
+                    var node = _grid[x, y];
+                    node.SetNodeData(data, Color.black);
+                    if(data == "0") continue;
+                    UpdateDomains(node, data, false);
                 }
             }
         }
 
-        public bool CheckIsPossible(Node node, int value)
+        public void UpdateDomains(Node node, string value, bool backTrack)
         {
-            return node.NodeDomain.Contains(value);
-        }
-
-        public void UpdateDomains(Node node, int value, float prevValue)
-        {
-
             var x = node.Position.x;
             var y = node.Position.y;
 
-            var restore = value == 0;
-
-            // Check row
-            for (var i = 0; i < _gridSizeX; i++)
+            // row
+            for (var i = 0; i < _gridSizeN; i++)
             {
-                if (i == x  && !restore) continue;
+                if (i == x) continue; 
                 var otherNode = _grid[i, y];
+                if(!backTrack)
+                    otherNode.NodeDomain.Remove(value);
 
-                var domainValue = restore ? prevValue : value;
-                otherNode.UpdateNodeDomain((int)domainValue, restore);
+                else if(IsValueSafeForNode(otherNode, value))
+                    otherNode.NodeDomain.Add(value);
             }
-
-            // Check col
-            for (var i = 0; i < _gridSizeY; i++)
+            //col
+            for (var i = 0; i < _gridSizeN; i++)
             {
-                if (i == y && !restore) continue;
+                if (i == y) continue;
                 var otherNode = _grid[x, i];
-                var domainValue = restore ? prevValue : value;
-                otherNode.UpdateNodeDomain((int)domainValue, restore);
+
+                if (!backTrack)
+                    otherNode.NodeDomain.Remove(value);
+
+                else if (IsValueSafeForNode(otherNode, value))
+                    otherNode.NodeDomain.Add(value);
             }
+            //subGrid
+            var subGridSize = (int)Mathf.Sqrt(_gridSizeN);
+            var startX = (x / subGridSize) * subGridSize;
+            var startY = (y / subGridSize) * subGridSize;
 
-            // Check 3x3 square
-            var squareX = (x / 3) * 3;
-            var squareY = (y / 3) * 3;
-
-            for (var i = 0; i < _gridSizeX / 3; i++)
+            for (var i = startX; i < startX + subGridSize; i++)
             {
-                for (var j = 0; j < _gridSizeY / 3; j++)
+                for (var j = startY; j < startY + subGridSize; j++)
                 {
-                    if (squareX + i == x && squareY + j == y && !restore) continue;
-                    var otherNode = _grid[squareX + i, squareY + j];
-                    var domainValue = restore ? prevValue : value;
-                    otherNode.UpdateNodeDomain((int)domainValue, restore);
+                    if (i == x && j == y) continue;
+                    var otherNode = _grid[i, j];
+
+                    if (!backTrack)
+                        otherNode.NodeDomain.Remove(value);
+
+                    else if (IsValueSafeForNode(otherNode, value))
+                        otherNode.NodeDomain.Add(value);
                 }
             }
+        }
+
+        private bool IsValueSafeForNode(Node node, string value)
+        {
+            return !IsValueInRow(node, value) && !IsValueInColumn(node, value) && !IsValueInSubGrid(node, value);
+        }
+
+        private bool IsValueInRow(Node node, string value)
+        {
+            var x = node.Position.x;
+            var y = node.Position.y;
+
+            for (var i = 0; i < _gridSizeN; i++)
+            {
+                if(i == x) continue;
+
+                var otherNode = _grid[i, y];
+                if (otherNode.NodeValue == value)
+                    return true;
+            }
+            return false;
+        }
+
+        private bool IsValueInColumn(Node node, string value)
+        {
+            var x = node.Position.x;
+            var y = node.Position.y;
+            for (var i = 0; i < _gridSizeN; i++)
+            {
+                if (i == y) continue;
+
+                var otherNode = _grid[x, i];
+                if (otherNode.NodeValue == value)
+                    return true;
+            }
+            return false;
+        }
+
+        private bool IsValueInSubGrid(Node node, string value)
+        {
+            var x = node.Position.x;
+            var y = node.Position.y;
+
+            var subGridSize = (int)Mathf.Sqrt(_gridSizeN);
+            var startX = (node.Position.x / subGridSize) * subGridSize;
+            var startY = (node.Position.y / subGridSize) * subGridSize;
+
+            for (var i = startX; i < startX + subGridSize; i++)
+            {
+                for (var j = startY; j < startY + subGridSize; j++)
+                {
+                    if (i == x && j == y) continue;
+                    var otherNode = _grid[i, j];
+                    if (otherNode.NodeValue == value)
+                        return true;
+                }
+            }
+            return false;
         }
 
         private GameObject InstantiateNodeGameObject(GameObject nodeObject, Vector3 position, GameObject holder)

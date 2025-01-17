@@ -278,8 +278,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _nodeObj: {fileID: 4184997114122600424, guid: 076b8adac9397e34d866ad7f12462c61, type: 3}
-  _gridSizeX: 9
-  _gridSizeY: 9
+  _gridSizeN: 9
   _nodeRadius: 0.5
 --- !u!4 &715815032
 Transform:
@@ -357,7 +356,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 8.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

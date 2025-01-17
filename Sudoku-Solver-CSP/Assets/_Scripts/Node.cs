@@ -19,8 +19,8 @@ namespace Assets._Scripts
         #region Mutable
         public GameObject NodeGameObject { get; private set; }
         public TMP_Text NodeGameObjectText => NodeGameObject?.GetComponentInChildren<TMP_Text>();
-        public float NodeValue { get; private set; }
-        public HashSet<int> NodeDomain { get; private set; }
+        public string NodeValue { get; private set; }
+        public HashSet<string> NodeDomain { get; set; }
         #endregion
 
         #endregion
@@ -41,7 +41,7 @@ namespace Assets._Scripts
         {
             NodeGameObject = nodeGameObject;
         }
-        public void SetValue(float value)
+        public void SetValue(string value)
         {
             NodeValue = value;
         }
@@ -50,33 +50,21 @@ namespace Assets._Scripts
             if (NodeGameObject == null) return;
             NodeGameObjectText.color = color;
         }
-        public bool CompareValue(float value)
+        public bool CompareValue(string value)
         {
-            return Math.Abs(NodeValue - value) < 0.001;
+            return NodeValue == value;
         }
-
-        public void SetNodeDomain(List<int> domain)
-        {
-            NodeDomain = new HashSet<int>(domain);
-        }
-        public void UpdateNodeDomain(int value, bool add)
-        {
-            if (add)
-                NodeDomain.Add(value);
-            else
-                NodeDomain.Remove(value);
-        }
-        public void SetNodeData(float value, Color color)
+        public void SetNodeData(string value, Color color)
         {
             SetValue(value);
             SetNodeGameObjectText(value);
             SetNodeGameObjectColor(color);
         }
 
-        public void SetNodeGameObjectText(float value)
+        public void SetNodeGameObjectText(string value)
         {
             if (NodeGameObject == null) return;
-            NodeGameObjectText?.SetText(value == 0 ? null : value.ToString());
+            NodeGameObjectText?.SetText(value == "0" ? null : value);
         }
 
         #endregion

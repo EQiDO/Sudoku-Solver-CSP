@@ -9,18 +9,22 @@ namespace Assets._Scripts
     public class SudokuSolver : MonoBehaviour
     {
         [SerializeField] private GameObject _nodeObj;
-        [SerializeField] private float _gridSizeX = 9;
-        [SerializeField] private float _gridSizeY = 9;
+        [SerializeField] private float _gridSizeN = 9;
         [SerializeField] private float _nodeRadius = 0.5f;
 
-        private readonly List<int> _domain = new() {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        private readonly List<string> _domain = new();
 
         private Grid _grid;
 
         private void Awake()
         {
-            var size = new Vector2(_gridSizeX, _gridSizeY);
+            for (var i = 1; i < _gridSizeN + 1; i++)
+            {
+                _domain.Add(i.ToString());
+            }
+            var size = new Vector2(_gridSizeN, _gridSizeN);
             _grid = new Grid(_domain, _nodeObj, size, _nodeRadius);
+            
         }
         private void Start()
         {
@@ -28,7 +32,7 @@ namespace Assets._Scripts
             sw.Start();
             Debug.Log(Solve() ? "Solved!" : "Unsolvable!");
             sw.Stop();
-            print(sw.ElapsedMilliseconds);
+            print($"time: {sw.Elapsed.TotalSeconds:F3}");
         }
 
         private bool Solve()
@@ -40,19 +44,14 @@ namespace Assets._Scripts
                 return true;
             }
 
-            var row = node.Position.x;
-            var col = node.Position.y;
-
-            foreach (var value in node.NodeDomain.ToList().Where(value => _grid.CheckIsPossible(node, value)))
+            foreach (var value in node.NodeDomain.ToList())
             {
                 node.SetNodeData(value, Color.red);
-                _grid.UpdateDomains(node, value, float.NaN);
+                _grid.UpdateDomains(node, value, false);
                 if (Solve())
                     return true;
-                var backTrackNode = _grid.GetNode(row, col);
-                var prevValue = backTrackNode.NodeValue;
-                backTrackNode.SetNodeData(0, Color.red);
-                _grid.UpdateDomains(backTrackNode, 0, prevValue);
+                node.SetNodeData("0", Color.red);
+                _grid.UpdateDomains(node, value, true);
             }
 
             return false;
