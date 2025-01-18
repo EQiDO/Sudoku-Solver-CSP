@@ -229,7 +229,7 @@ namespace Assets._Scripts
                 if(i == x) continue;
 
                 var otherNode = _grid[i, y];
-                if (otherNode.NodeValue == value)
+                if (otherNode.CompareValue(value))
                     return true;
             }
             return false;
@@ -244,7 +244,7 @@ namespace Assets._Scripts
                 if (i == y) continue;
 
                 var otherNode = _grid[x, i];
-                if (otherNode.NodeValue == value)
+                if (otherNode.CompareValue(value))
                     return true;
             }
             return false;
@@ -265,7 +265,7 @@ namespace Assets._Scripts
                 {
                     if (i == x && j == y) continue;
                     var otherNode = _grid[i, j];
-                    if (otherNode.NodeValue == value)
+                    if (otherNode.CompareValue(value))
                         return true;
                 }
             }

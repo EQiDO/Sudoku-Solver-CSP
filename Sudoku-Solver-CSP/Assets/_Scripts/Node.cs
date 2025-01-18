@@ -52,7 +52,7 @@ namespace Assets._Scripts
         }
         public bool CompareValue(string value)
         {
-            return NodeValue == value;
+            return NodeValue.Equals(value);
         }
         public void SetNodeData(string value, Color color)
         {
